@@ -43,11 +43,12 @@ def cellPixelCheck():
     width, height = image_cell.size
     pixel_values = list(image_cell.getdata())
     pixel_values = numpy.array(pixel_values).reshape((width, height, 3))
+    # print(pixel_values[10][17])
     if pixel_values[10][17][0] == 0 and pixel_values[10][17][1] == 0 and pixel_values[10][17][2] == 255:
         return 1
     if pixel_values[10][17][0] == 47 and pixel_values[10][17][1] == 139 and pixel_values[10][17][2] == 47:
         return 2
-    if pixel_values[10][17][0] == 238 and pixel_values[10][17][1] == 47 and pixel_values[10][17][2] == 47:
+    if pixel_values[10][17][0] == 0 and pixel_values[10][17][1] == 0 and pixel_values[10][17][2] == 123:
         return 3
     
 def checkStatus():
