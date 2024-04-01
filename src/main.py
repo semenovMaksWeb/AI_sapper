@@ -1,6 +1,5 @@
 import openSite
 import ai
 
-# openSite.openSite()
-
+openSite.openSite()
 ai.start()
