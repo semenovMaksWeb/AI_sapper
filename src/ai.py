@@ -4,6 +4,8 @@ import pyautogui
 
 import parsingImg
 
+import env
+
 schema = []
 START_CELL_W = 1040
 START_CELL_H = 300
@@ -20,8 +22,8 @@ def start():
     return
 
 def createSchema():
-    for y in range(15):
-        for x in range(15):
+    for y in range(env.sizeY()):
+        for x in range(env.sizeX()):
             parsingImg.parsingCell(y, x)
             val = parsingImg.cellPixelCheck()
             schema.append({"x": x, "y": y, "val": val})
