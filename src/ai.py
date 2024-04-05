@@ -3,12 +3,16 @@ from time import sleep
 import pyautogui
 
 import parsingImg
-
 import env
 
 schema = []
-START_CELL_W = 1040
-START_CELL_H = 300
+schemaFlag = []
+if env.levelSize() == 2:
+    START_CELL_W = 1040
+    START_CELL_H = 300
+if env.levelSize() == 1:
+    START_CELL_W = 1160
+    START_CELL_H = 290
 SIZE = 32
 
 def screenFull():
@@ -17,26 +21,102 @@ def screenFull():
 
 def start():
     clickCell(0, 0, 3)
+    
+    #  временно ибо работа без браузера
+    # parsingImg._parsingScreen() 
+    #  временно ибо работа без браузера
+    
     createSchema()
+    checkSchema()
     print(schema)
-    return
+
+
+def checkSchema ():
+    while(True):
+        for elem in schema:
+            if elem.get("val") != 0 and elem.get("val") != None:
+                checkClick = []
+                checkElemClickAll(elem, checkClick)
+                if  len(checkClick) == 1:
+                    schemaFlag.append(checkClick[0])
+                    fakeAllClickCheck(elem)
+                    screenFull()
+                    sleep(1)
+                    parsingImg.checkStatus()
+                    sleep(1)
+                    createSchema()
+                    continue
+        break
+
+def fakeAllClickCheck(elem):
+    fakeClick(elem.get("x") + 1, elem.get("y"))
+    fakeClick(elem.get("x") - 1, elem.get("y")) 
+    fakeClick(elem.get("x") - 1, elem.get("y")) 
+    fakeClick(elem.get("x"), elem.get("y") - 1)
+    fakeClick(elem.get("x") + 1, elem.get("y") - 1)  
+    fakeClick(elem.get("x") - 1, elem.get("y") - 1)
+    fakeClick(elem.get("x"), elem.get("y") + 1)
+    fakeClick(elem.get("x") + 1, elem.get("y") + 1)
+    fakeClick(elem.get("x") - 1, elem.get("y") + 1)
+
+def fakeClick(x, y):
+        elemCheck = getSchemaElement(schema, x, y)
+        if(
+            elemCheck and 
+            (elemCheck.get("val") != 0 or elemCheck.get("val") != None ) and 
+            not checkFlagElem(x,y)
+        ):
+            clickCell(x, y, 1)
+            
+def checkElemClickAll(elem, checkClick):
+    blockCheckElemClick(elem.get("x") + 1, elem.get("y"), checkClick)
+    blockCheckElemClick(elem.get("x") - 1, elem.get("y"), checkClick) 
+    blockCheckElemClick(elem.get("x") - 1, elem.get("y"), checkClick) 
+    blockCheckElemClick(elem.get("x"), elem.get("y") - 1, checkClick)
+    blockCheckElemClick(elem.get("x") + 1, elem.get("y") - 1, checkClick)  
+    blockCheckElemClick(elem.get("x") - 1, elem.get("y") - 1, checkClick)
+    blockCheckElemClick(elem.get("x"), elem.get("y") + 1, checkClick)
+    blockCheckElemClick(elem.get("x") + 1, elem.get("y") + 1, checkClick)  
+    blockCheckElemClick(elem.get("x") - 1, elem.get("y") + 1, checkClick)
+
+def checkFlagElem(x,y):
+    if getSchemaElement(schemaFlag, x,y):
+        return True
+    return False
+
+def blockCheckElemClick(x,y, checkClick):
+    elemCheck = getSchemaElement(schema, x, y)
+    if elemCheck and checkElementClick(elemCheck) and not checkFlagElem(x,y):
+        checkClick.append(elemCheck)
+
+def checkElementClick(elem):
+    if elem.get("val") == 0:
+        return True
+    return False
+
+def getSchemaElement(schema, x ,y):
+    for elem in schema:
+        if elem.get("x") == x and elem.get("y") ==  y:
+            return elem
 
 def createSchema():
     for y in range(env.sizeY()):
         for x in range(env.sizeX()):
-            parsingImg.parsingCell(y, x)
-            val = parsingImg.cellPixelCheck()
-            schema.append({"x": x, "y": y, "val": val})
-    return
+            if checkFlagElem(x,y):
+                schema.append({"x": x, "y": y, "val": None})
+            else:
+                parsingImg.parsingCell(y, x)
+                val = parsingImg.cellPixelCheck()
+                schema.append({"x": x, "y": y, "val": val})
 
-def clickPosition(x,y):
+def clickPosition(x,y, type="left"):
     pyautogui.moveTo(x, y, duration = 0.25)
-    pyautogui.click()
+    if type == "left":
+        pyautogui.leftClick()
+    else:
+        pyautogui.rightClick()
     sleep(1)
     
-def clickCell(x,y, time = 1):
+def clickCell(x,y, time = 1, type = "left"):
     sleep(time)  
-    clickPosition(START_CELL_W + SIZE * x, START_CELL_H + SIZE * y)
-    screenFull()
-    parsingImg.checkStatus()
-    createSchema()
+    clickPosition(START_CELL_W + SIZE * x, START_CELL_H + SIZE * y, type)

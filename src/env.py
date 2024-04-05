@@ -1,16 +1,18 @@
 def levelSize():
-    return 3
+    return 1
 
 def sizeX():
     if levelSize() == 3:
         return 30
-        pass
     if levelSize() == 2:
         return 15
+    if levelSize() == 1:
+        return 8
     
 def sizeY():
     if levelSize() == 3:
         return 15
-        pass
     if levelSize() == 2:
         return 15
+    if levelSize() == 1:
+        return 8
