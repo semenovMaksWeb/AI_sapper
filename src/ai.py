@@ -7,6 +7,7 @@ import env
 
 schema = []
 schemaFlag = []
+
 if env.levelSize() == 2:
     START_CELL_W = 1040
     START_CELL_H = 300
@@ -24,6 +25,7 @@ def start():
     screenFull()
     parsingImg.checkStatus()
     while(True):
+        schema.clear()
         createSchema()
         checkSchema()
 
@@ -112,8 +114,6 @@ def getSchemaElement(schema, x ,y):
             return elem
 
 def createSchema():
-    print("createSchema")
-    schema = []
     for y in range(env.sizeY()):
         for x in range(env.sizeX()):
             if checkFlagElem(x,y):
