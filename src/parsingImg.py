@@ -37,9 +37,9 @@ def _checkStatusGames():
     image_status = Image.open('img/status.png').convert('RGB')
     pixel_values_image_status = list(image_status.getdata())
     pixel_values_image_status_ok = list(image_status_ok.getdata())
-    if numpy.array_equal(pixel_values_image_status,pixel_values_image_status_ok): 
-        return True
-    return sys.exit(1)
+    if not numpy.array_equal(pixel_values_image_status,pixel_values_image_status_ok):
+        print("выход!")
+        sys.exit(1)
 
 def parsingCell(y, x):
     image_pole = Image.open('img/pole.png').convert('RGB')
@@ -60,7 +60,7 @@ def parsingCell(y, x):
         H_END = H_START + 32
     image_cell = image_pole.crop((W_START, H_START, W_END, H_END))
     image_cell.save('img/cell.png', quality = 95)
-    image_cell.save('img/cell' + str(x) + str(y) + ".png", quality = 95)
+    # image_cell.save('img/cell' + str(x) + str(y) + ".png", quality = 95)
     
 def cellPixelCheck():
     image_cell = Image.open("img/cell.png").convert('RGB')

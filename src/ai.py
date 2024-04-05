@@ -25,7 +25,7 @@ def start():
     screenFull()
     parsingImg.checkStatus()
     while(True):
-        schema.clear()
+        checkStatusAI()
         createSchema()
         checkSchema()
 
@@ -37,6 +37,7 @@ def clickRandom():
 
 def checkStatusAI():
     screenFull()
+    sleep(0.4)
     parsingImg.checkStatus()
     sleep(1)
 
@@ -119,6 +120,7 @@ def createSchema():
                 schema.append({"x": x, "y": y, "val": val})
 
 def clickPosition(x,y, type="left"):
+    print("click", x, " ", y,  " ", type)
     pyautogui.moveTo(x, y, duration = 0.25)
     if type == "left":
         pyautogui.leftClick()
