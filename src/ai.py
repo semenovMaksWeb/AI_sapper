@@ -31,7 +31,7 @@ def start():
 
 def clickRandom():
         for elem in schema:
-            if elem.get("val") == None and not checkFlagElem(elem.get("x"), elem.get("y")):
+            if elem.get("val") == 0 and not checkFlagElem(elem.get("x"), elem.get("y")):
                 clickCell(elem.get("x"), elem.get("y"))
 
 
