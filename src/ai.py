@@ -41,7 +41,6 @@ def checkStatusAI():
     sleep(1)
 
 def checkSchema ():
-    print("checkSchema", schema)
     for elem in schema:
         if elem.get("val") != 0 and elem.get("val") != None:
             checkClick = []
@@ -78,7 +77,6 @@ def fakeClick(x, y):
             clickCell(x, y)
             
 def checkElemClickAll(elem, checkClick):
-    print("elem, checkClick", elem, checkClick)
     blockCheckElemClick(elem.get("x") + 1, elem.get("y"), checkClick)
     blockCheckElemClick(elem.get("x") - 1, elem.get("y"), checkClick)
     
@@ -97,10 +95,7 @@ def checkFlagElem(x,y):
 
 def blockCheckElemClick(x,y, checkClick):
     elemCheck = getSchemaElement(schema, x, y)
-    print(elemCheck)
-    print(x,y)
     if elemCheck and checkElementClick(elemCheck) and not checkFlagElem(x,y):
-        print("add", elemCheck)
         checkClick.append(elemCheck)
 
 def checkElementClick(elem):
@@ -122,7 +117,6 @@ def createSchema():
                 parsingImg.parsingCell(y, x)
                 val = parsingImg.cellPixelCheck()
                 schema.append({"x": x, "y": y, "val": val})
-    print(schema)
 
 def clickPosition(x,y, type="left"):
     pyautogui.moveTo(x, y, duration = 0.25)
