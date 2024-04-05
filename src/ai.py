@@ -23,17 +23,9 @@ def start():
     clickCell(0, 0, 3)
     screenFull()
     parsingImg.checkStatus()
-    
-    #  временно ибо работа без браузера
-    # parsingImg._parsingScreen() 
-    #  временно ибо работа без браузера
     while(True):
         createSchema()
-        if not checkSchema():
-            print("выход")
-            break
-    print(schema)
-
+        checkSchema()
 
 def clickRandom():
         for elem in schema:
@@ -43,13 +35,12 @@ def clickRandom():
 
 def checkStatusAI():
     screenFull()
-    if parsingImg.checkStatus() != True:
-        return False
+    parsingImg.checkStatus()
     sleep(1)
     createSchema()
-    return True
 
 def checkSchema ():
+    print("checkSchema", schema)
     for elem in schema:
         if elem.get("val") != 0 and elem.get("val") != None:
             checkClick = []
@@ -58,10 +49,10 @@ def checkSchema ():
                 schemaFlag.append(checkClick[0])
                 clickCell(checkClick[0].get("x"), checkClick[0].get("y"), 1, "right")
                 fakeAllClickCheck(checkClick[0])
-                if not checkStatusAI():
-                    return False
+                checkStatusAI()
+                
     clickRandom()
-    return checkStatusAI()
+    checkStatusAI()
 
 def fakeAllClickCheck(elem):
     fakeClick(elem.get("x") + 1, elem.get("y"))
@@ -85,6 +76,7 @@ def fakeClick(x, y):
             clickCell(x, y)
             
 def checkElemClickAll(elem, checkClick):
+    print("elem, checkClick", elem, checkClick)
     blockCheckElemClick(elem.get("x") + 1, elem.get("y"), checkClick)
     blockCheckElemClick(elem.get("x") - 1, elem.get("y"), checkClick)
     
@@ -103,7 +95,10 @@ def checkFlagElem(x,y):
 
 def blockCheckElemClick(x,y, checkClick):
     elemCheck = getSchemaElement(schema, x, y)
+    print(elemCheck)
+    print(x,y)
     if elemCheck and checkElementClick(elemCheck) and not checkFlagElem(x,y):
+        print("add", elemCheck)
         checkClick.append(elemCheck)
 
 def checkElementClick(elem):
@@ -117,17 +112,16 @@ def getSchemaElement(schema, x ,y):
             return elem
 
 def createSchema():
+    print("createSchema")
     schema = []
     for y in range(env.sizeY()):
         for x in range(env.sizeX()):
             if checkFlagElem(x,y):
                 schema.append({"x": x, "y": y, "val": None})
             else:
-                print("check pole", x, y)
                 parsingImg.parsingCell(y, x)
                 val = parsingImg.cellPixelCheck()
                 schema.append({"x": x, "y": y, "val": val})
-                print("end check pole", x, y)
     print(schema)
 
 def clickPosition(x,y, type="left"):

@@ -39,7 +39,7 @@ def _checkStatusGames():
     pixel_values_image_status_ok = list(image_status_ok.getdata())
     if numpy.array_equal(pixel_values_image_status,pixel_values_image_status_ok): 
         return True
-    return False
+    return sys.exit(1)
 
 def parsingCell(y, x):
     image_pole = Image.open('img/pole.png').convert('RGB')
