@@ -37,7 +37,6 @@ def checkStatusAI():
     screenFull()
     parsingImg.checkStatus()
     sleep(1)
-    createSchema()
 
 def checkSchema ():
     print("checkSchema", schema)
@@ -50,6 +49,7 @@ def checkSchema ():
                 clickCell(checkClick[0].get("x"), checkClick[0].get("y"), 1, "right")
                 fakeAllClickCheck(checkClick[0])
                 checkStatusAI()
+                return
                 
     clickRandom()
     checkStatusAI()
