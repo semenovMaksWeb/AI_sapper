@@ -27,13 +27,27 @@ def start():
     #  временно ибо работа без браузера
     # parsingImg._parsingScreen() 
     #  временно ибо работа без браузера
-
     while(True):
         createSchema()
         if not checkSchema():
+            print("выход")
             break
     print(schema)
 
+
+def clickRandom():
+        for elem in schema:
+            if elem.get("val") == None and not checkFlagElem(elem.get("x"), elem.get("y")):
+                clickCell(elem.get("x"), elem.get("y"))
+
+
+def checkStatusAI():
+    screenFull()
+    if parsingImg.checkStatus() != True:
+        return False
+    sleep(1)
+    createSchema()
+    return True
 
 def checkSchema ():
     for elem in schema:
@@ -42,18 +56,12 @@ def checkSchema ():
             checkElemClickAll(elem, checkClick)
             if  len(checkClick) == 1:
                 schemaFlag.append(checkClick[0])
-                sleep(1)
                 clickCell(checkClick[0].get("x"), checkClick[0].get("y"), 1, "right")
-                sleep(1)
                 fakeAllClickCheck(checkClick[0])
-                sleep(1)
-                screenFull()
-                sleep(1)
-                if parsingImg.checkStatus() != True:
+                if not checkStatusAI():
                     return False
-                sleep(1)
-                createSchema()
-                sleep(1)
+    clickRandom()
+    return checkStatusAI()
 
 def fakeAllClickCheck(elem):
     fakeClick(elem.get("x") + 1, elem.get("y"))
@@ -115,9 +123,12 @@ def createSchema():
             if checkFlagElem(x,y):
                 schema.append({"x": x, "y": y, "val": None})
             else:
+                print("check pole", x, y)
                 parsingImg.parsingCell(y, x)
                 val = parsingImg.cellPixelCheck()
                 schema.append({"x": x, "y": y, "val": val})
+                print("end check pole", x, y)
+    print(schema)
 
 def clickPosition(x,y, type="left"):
     pyautogui.moveTo(x, y, duration = 0.25)
