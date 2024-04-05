@@ -8,7 +8,11 @@ numpy.set_printoptions(threshold=sys.maxsize)
 
 def _saveImgStatus():
     image_pole = Image.open("img/pole.png")
-    image_status = image_pole.crop((246, 10, 288, 60))
+    if env.levelSize() == 1:
+        image_status = image_pole.crop((125, 10, 176, 60))
+    if env.levelSize() == 2:
+        image_status = image_pole.crop((246, 10, 288, 60))
+    
     image_status.save('img/status.png', quality=95)
     
 
@@ -29,14 +33,13 @@ def _parsingScreen():
     image_pole.save('img/pole.png', quality=95)
 
 def _checkStatusGames():
-    image = Image.open('img/status.png').convert('RGB')
-    width, height = image.size
-    pixel_values = list(image.getdata())
-    pixel_values = numpy.array(pixel_values).reshape((width, height, 3))
-    if pixel_values[0][0][2] ==  222:
+    image_status_ok = Image.open('img/status_ok.png').convert('RGB')
+    image_status = Image.open('img/status.png').convert('RGB')
+    pixel_values_image_status = list(image_status.getdata())
+    pixel_values_image_status_ok = list(image_status_ok.getdata())
+    if numpy.array_equal(pixel_values_image_status,pixel_values_image_status_ok): 
         return True
-    if pixel_values[0][0][2] ==  218:
-        sys.exit(1)
+    return False
 
 def parsingCell(y, x):
     image_pole = Image.open('img/pole.png').convert('RGB')
