@@ -55,7 +55,7 @@ def start():
 def clickRandom():
         for key, elem in schema.items():
             if elem.get("val") == 0 and not checkFlagElem(elem.get("y"), elem.get("x")):
-                print("click random y,x = ", elem.get("y")," " + elem.get("x"))
+                print("click random y,x = ", elem.get("y")," ", elem.get("x"))
                 clickCell(elem.get("y"), elem.get("x"))
                 return
 
@@ -79,7 +79,7 @@ def checkSchema ():
             checkElemClickAll(elem, checkClick)
             print("checkClick", checkClick)
             if len(checkClick) == 1 and checkFlagAllCells(elem):
-                flagAddCells(elem)
+                flagAddCells(checkClick[0])
                 return
             if len(checkClick) == elem.get("val") - getCounterFlagAllCells(elem):
                 for elemClick in checkClick:
@@ -97,10 +97,12 @@ def flagAddCells(elem):
     checkStatusAI()
 
 # клики во все безопастные места для открытие соседних клеток
-def fakeAllClickCheck(elem):
-    indexsCells = generatorIndexsCells(elem)
+def fakeAllClickCheck(elem, indexsCells = None):
+    if indexsCells == None:
+        indexsCells = generatorIndexsCells(elem)
     for indexCells in indexsCells:
-        if fakeClick(indexCells.get("y"), indexCells.get("x"), elem):
+        indexsCells.remove(indexCells)
+        if fakeClick(indexCells.get("y"), indexCells.get("x"), elem, indexsCells):
             return
 
 def getCounterFlagAllCells(elem):
@@ -123,7 +125,6 @@ def checkAllCells0(elem):
     indexsCells = generatorIndexsCells(elem)
     for indexCell in indexsCells:
         elemCheck = getSchemaElement(schema, indexCell.get("y"), indexCell.get("x"))
-        
         if(elemCheck and checkElementClick(elemCheck)):
             return True
         
@@ -144,7 +145,7 @@ def generatorIndexsCells(elem):
     ]
 
 # клик в конкретную безопастную ячейку места для открытие соседних клеток
-def fakeClick(y, x, elemRecurs):
+def fakeClick(y, x, elemRecurs, indexsCells):
         elemCheck = getSchemaElement(schema, y, x)
         if(
             elemCheck and 
@@ -157,7 +158,7 @@ def fakeClick(y, x, elemRecurs):
             checkStatusAI()
             createSchema()
             if elemRecurs:
-                fakeAllClickCheck(elemRecurs)
+                fakeAllClickCheck(elemRecurs, indexsCells)
             return True
 
 # изучение соседних клеток для понимание определение флажков
