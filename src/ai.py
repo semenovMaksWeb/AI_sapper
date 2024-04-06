@@ -5,7 +5,6 @@ import pyautogui
 import parsingImg
 import env
 
-# todo попробовать сделать объектом с ключом `${x}-${y}` для более быстрого поиска по x, y
 schema = {}
 schemaFlag = {}
 
@@ -77,7 +76,7 @@ def checkSchema ():
         if elem.get("val") != 0 and elem.get("val") != None:
             checkClick = []
             checkElemClickAll(elem, checkClick)
-            # todo изучать что цифра равна len(checkClick) и что флагов не больше чем цифра ибо нельзя ставить 2 флага когда цифра 1
+            # TODO изучать что цифра равна len(checkClick) и что флагов не больше чем цифра ибо нельзя ставить 2 флага когда цифра 1
             if  len(checkClick) == 1:
                 saveElementFlag(checkClick[0].get("x"), checkClick[0].get("x"), checkClick[0], "schemaFlag")
                 clickCell(checkClick[0].get("x"), checkClick[0].get("y"), 1, "right")
@@ -89,7 +88,7 @@ def checkSchema ():
 
 # клики во все безопастные места для открытие соседних клеток
 def fakeAllClickCheck(elem):
-    # todo возможно стоит изучать куда имеет смысл нажимать
+    # TODO возможно стоит изучать куда имеет смысл нажимать
     fakeClick(elem.get("x") + 1, elem.get("y"))
     fakeClick(elem.get("x") - 1, elem.get("y")) 
     
