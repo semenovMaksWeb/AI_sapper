@@ -162,6 +162,7 @@ def fakeClick(y, x, elemRecurs, indexsCells, indexCells):
             (elemCheck.get("val") != 0 and elemCheck.get("val") != None ) and 
             not checkFlagElem(y, x) 
             and checkCellAll0
+            and elemCheck.get("val") == getCounterFlagAllCells(elemCheck)
         ):
             # TODO нажимает все подряд надо как то разобраться
             indexsCells.remove(indexCells)
