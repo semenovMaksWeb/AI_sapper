@@ -81,7 +81,8 @@ def checkSchema ():
             if len(checkClick) == 1 and checkFlagAllCells(elem):
                 flagAddCells(checkClick[0])
                 return
-            if len(checkClick) == elem.get("val") - getCounterFlagAllCells(elem):
+            if len(checkClick) != 0 and len(checkClick) == elem.get("val") - getCounterFlagAllCells(elem):
+                print("len(checkClick) == elem.get('val')checkClick")
                 for elemClick in checkClick:
                     flagAddCells(elemClick)
                 return                   
