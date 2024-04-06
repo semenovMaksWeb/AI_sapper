@@ -118,6 +118,9 @@ def checkFlagAllCells(elem):
         counter = getCounterFlagAllCells(elem)
         if counter != val:
             return True
+        if(val != 0 and val != None):
+           clickCell(elem.get("y"), elem.get("x"), 1, "left")
+           checkStatusAI()
         return False 
         
 # проверка что есть хотя бы 1 соседний элемент который раскроет при клике
@@ -150,8 +153,8 @@ def fakeClick(y, x, elemRecurs, indexsCells):
         if(
             elemCheck and 
             (elemCheck.get("val") != 0 and elemCheck.get("val") != None ) and 
-            not checkFlagElem(y, x) and
-            checkAllCells0(elemCheck)
+            not checkFlagElem(y, x) 
+            # and checkAllCells0(elemCheck)
         ):
             # TODO нажимает все подряд надо как то разобраться
             clickCell(y, x)
