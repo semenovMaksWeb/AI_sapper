@@ -61,13 +61,13 @@ def clickRandom():
 
 # Проверка ситуации все ли ок
 def checkStatusAI():
-    sleep(0.2)
+    sleep(0.4)
     print("сделал скрин checkStatusAI")
     screenFull()
     # saveOldScreen()
-    sleep(0.2)
+    sleep(0.4)
     parsingImg.checkStatus()
-    sleep(0.2)
+    sleep(0.4)
 
 # анализ schema для понимания что можно сделать
 def checkSchema ():
@@ -132,6 +132,7 @@ def checkAllCells0(elem):
 
 # создание объект x,y с соседними ячейками
 def generatorIndexsCells(elem):
+    print(elem)
     return [
         {"x":elem.get("x") + 1, "y":elem.get("y") },
         {"x":elem.get("x") - 1, "y":elem.get("y") },
@@ -202,14 +203,14 @@ def createSchema():
 # клик по ячейки
 def clickPosition(x,y, type="left"):
     print("click", x, " ", y,  " ", type)
-    pyautogui.moveTo(x, y, duration = 0.25)
+    pyautogui.moveTo(x, y, duration = 0.45)
     if type == "left":
         pyautogui.leftClick()
     else:
         pyautogui.rightClick()
-    sleep(0.2)
+    sleep(0.4)
 
 # клик по ячейки учитывая сдвиг до игрового поля
-def clickCell(x,y, time = 0.2, type = "left"):
+def clickCell(x,y, time = 0.4, type = "left"):
     sleep(time)  
     clickPosition(START_CELL_W + SIZE * x, START_CELL_H + SIZE * y, type)
