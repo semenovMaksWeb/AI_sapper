@@ -102,8 +102,7 @@ def fakeAllClickCheck(elem, indexsCells = None):
     if indexsCells == None:
         indexsCells = generatorIndexsCells(elem)
     for indexCells in indexsCells:
-        indexsCells.remove(indexCells)
-        if fakeClick(indexCells.get("y"), indexCells.get("x"), elem, indexsCells):
+        if fakeClick(indexCells.get("y"), indexCells.get("x"), elem, indexsCells, indexCells):
             return
 
 def getCounterFlagAllCells(elem):
@@ -149,7 +148,7 @@ def generatorIndexsCells(elem):
     ]
 
 # клик в конкретную безопастную ячейку места для открытие соседних клеток
-def fakeClick(y, x, elemRecurs, indexsCells):
+def fakeClick(y, x, elemRecurs, indexsCells, indexCells):
         elemCheck = getSchemaElement(schema, y, x)
         if(
             elemCheck and 
@@ -158,6 +157,7 @@ def fakeClick(y, x, elemRecurs, indexsCells):
             # and checkAllCells0(elemCheck)
         ):
             # TODO нажимает все подряд надо как то разобраться
+            indexsCells.remove(indexCells)
             clickCell(y, x)
             checkStatusAI()
             createSchema()
