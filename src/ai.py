@@ -78,7 +78,7 @@ def checkSchema ():
             if len(checkClick) == 1 and checkFlagAllCells(checkClick[0]):
                 flagAddCells(elem)
                 return
-            if len(checkClick) == elem.get("val") - getCounterFlagAllCells(checkClick):
+            if len(checkClick) == elem.get("val") - getCounterFlagAllCells(elem):
                 for elemClick in checkClick:
                     flagAddCells(elemClick)
                 return                   
@@ -132,7 +132,6 @@ def checkAllCells0(elem):
 
 # создание объект x,y с соседними ячейками
 def generatorIndexsCells(elem):
-    print(elem)
     return [
         {"x":elem.get("x") + 1, "y":elem.get("y") },
         {"x":elem.get("x") - 1, "y":elem.get("y") },
