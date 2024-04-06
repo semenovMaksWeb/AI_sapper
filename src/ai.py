@@ -32,14 +32,18 @@ def start():
 def clickRandom():
         for elem in schema:
             if elem.get("val") == 0 and not checkFlagElem(elem.get("x"), elem.get("y")):
+                print("click random", elem.get("x"), elem.get("y"))
                 clickCell(elem.get("x"), elem.get("y"))
+                return
 
 
 def checkStatusAI():
+    sleep(0.4)
+    print("сделал скрин checkStatusAI")
     screenFull()
     sleep(0.4)
     parsingImg.checkStatus()
-    sleep(1)
+    sleep(0.4)
 
 def checkSchema ():
     for elem in schema:
@@ -51,12 +55,12 @@ def checkSchema ():
                 clickCell(checkClick[0].get("x"), checkClick[0].get("y"), 1, "right")
                 fakeAllClickCheck(checkClick[0])
                 checkStatusAI()
-                return
-                
+                return         
     clickRandom()
     checkStatusAI()
 
 def fakeAllClickCheck(elem):
+    # todo возможно стоит изучать куда имеет смысл нажимать
     fakeClick(elem.get("x") + 1, elem.get("y"))
     fakeClick(elem.get("x") - 1, elem.get("y")) 
     
@@ -73,9 +77,11 @@ def fakeClick(x, y):
         if(
             elemCheck and 
             (elemCheck.get("val") != 0 and elemCheck.get("val") != None ) and 
-            not checkFlagElem(x,y)
+            not checkFlagElem(x, y)
         ):
             clickCell(x, y)
+            checkStatusAI()
+            createSchema()
             
 def checkElemClickAll(elem, checkClick):
     blockCheckElemClick(elem.get("x") + 1, elem.get("y"), checkClick)
@@ -126,8 +132,8 @@ def clickPosition(x,y, type="left"):
         pyautogui.leftClick()
     else:
         pyautogui.rightClick()
-    sleep(1)
+    sleep(0.4)
     
-def clickCell(x,y, time = 1, type = "left"):
+def clickCell(x,y, time = 0.4, type = "left"):
     sleep(time)  
     clickPosition(START_CELL_W + SIZE * x, START_CELL_H + SIZE * y, type)
