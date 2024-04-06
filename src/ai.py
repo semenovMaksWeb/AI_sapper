@@ -8,7 +8,7 @@ import env
 schema = {}
 schemaFlag = {}
 
-checkScreen = 1
+# checkScreen = 1
 
 if env.levelSize() == 2:
     START_CELL_W = 1040
@@ -23,7 +23,7 @@ def getKeySchemaElement(y, x):
     return str(y) + "-" + str(x)
 
 # сохранение объекта schema по [y,x]
-def saveElementFlag(y, x, elem, name):
+def saveElementSchema(y, x, elem, name):
     key = getKeySchemaElement(y, x)
     if name == "schemaFlag":
         schemaFlag[key] = elem
@@ -35,11 +35,11 @@ def screenFull():
     with mss() as sct:
         sct.shot(mon=-1, output='img/monitor-1.png')
 
-# функция отладки сохранение файлов скринов отдельно
-def saveOldScreen():
-    global checkScreen
-    checkScreen = checkScreen + 1
-    parsingImg.fileAddOldScreen(checkScreen)
+# # функция отладки сохранение файлов скринов отдельно
+# def saveOldScreen():
+#     global checkScreen
+#     checkScreen = checkScreen + 1
+#     parsingImg.fileAddOldScreen(checkScreen)
 
 # Старт программы
 def start():
@@ -63,70 +63,110 @@ def clickRandom():
 def checkStatusAI():
     sleep(0.4)
     print("сделал скрин checkStatusAI")
-    saveOldScreen()
     screenFull()
+    # saveOldScreen()
     sleep(0.4)
     parsingImg.checkStatus()
     sleep(0.4)
 
 # анализ schema для понимания что можно сделать
 def checkSchema ():
-    print("checkSchema", schema)
     for key, elem in schema.items():
         if elem.get("val") != 0 and elem.get("val") != None:
             checkClick = []
             checkElemClickAll(elem, checkClick)
-            # TODO изучать что цифра равна len(checkClick) и что флагов не больше чем цифра ибо нельзя ставить 2 флага когда цифра 1
-            if  len(checkClick) == 1:
-                saveElementFlag(checkClick[0].get("x"), checkClick[0].get("x"), checkClick[0], "schemaFlag")
-                clickCell(checkClick[0].get("x"), checkClick[0].get("y"), 1, "right")
-                fakeAllClickCheck(checkClick[0])
-                checkStatusAI()
+            if len(checkClick) == 1 and checkFlagAllCells(checkClick[0]):
+                flagAddCells(elem)
                 return
+            if len(checkClick) == elem.get("val") - getCounterFlagAllCells(checkClick):
+                for elemClick in checkClick:
+                    flagAddCells(elemClick)
+                return                   
     clickRandom()
+    checkStatusAI()
+
+# Поставка флага для 1 ячейки
+def flagAddCells(elem):
+    saveElementSchema(elem.get("x"), elem.get("y"), elem, "schemaFlag")
+    saveElementSchema(elem.get("x"), elem.get("y"), {"x": elem.get("x"), "y": elem.get("y"), "val": None}, "schema")
+    clickCell(elem.get("x"), elem.get("y"), 1, "right")
+    fakeAllClickCheck(elem)
     checkStatusAI()
 
 # клики во все безопастные места для открытие соседних клеток
 def fakeAllClickCheck(elem):
-    # TODO возможно стоит изучать куда имеет смысл нажимать
-    fakeClick(elem.get("x") + 1, elem.get("y"))
-    fakeClick(elem.get("x") - 1, elem.get("y")) 
-    
-    fakeClick(elem.get("x"), elem.get("y") - 1)
-    fakeClick(elem.get("x") + 1, elem.get("y") - 1)  
-    fakeClick(elem.get("x") - 1, elem.get("y") - 1)
-    
-    fakeClick(elem.get("x"), elem.get("y") + 1)
-    fakeClick(elem.get("x") + 1, elem.get("y") + 1)
-    fakeClick(elem.get("x") - 1, elem.get("y") + 1)
+    indexsCells = generatorIndexsCells(elem)
+    for indexCells in indexsCells:
+        if fakeClick(indexCells.get("x"), indexCells.get("y"), elem):
+            return
 
-# клик в конкретную  безопастную ячейку места  для открытие соседних клеток
-def fakeClick(x, y):
+
+
+def getCounterFlagAllCells(elem):
+    counter = 0
+    indexsCells = generatorIndexsCells(elem)
+    for indexCells in indexsCells:
+        if getSchemaElement(schemaFlag, indexCells.get("x"), indexCells.get("y")):
+            counter = counter + 1
+    return counter
+
+
+def checkFlagAllCells(elem):
+        val = elem.get("val")
+        counter = getCounterFlagAllCells(elem)
+        if counter != val:
+            return True
+        fakeClick(elem.get("x"), elem.get("y"), None)
+        return False 
+        
+# проверка что есть хотя бы 1 соседний элемент который раскроет при клике
+def checkAllCells0(elem):
+    indexsCells = generatorIndexsCells(elem)
+    for indexCell in indexsCells:
+        elemCheck = getSchemaElement(schema, indexCell.get("x"), indexCell.get("y"))
+        
+        if(checkElementClick(elemCheck)):
+            return True
+        
+    return False
+
+# создание объект x,y с соседними ячейками
+def generatorIndexsCells(elem):
+    return [
+        {"x":elem.get("x") + 1, "y":elem.get("y") },
+        {"x":elem.get("x") - 1, "y":elem.get("y") },
+        {"x": elem.get("x"), "y": elem.get("y") - 1 },
+        {"x": elem.get("x") + 1, "y": elem.get("y") - 1 },
+        {"x": elem.get("x") - 1, "y": elem.get("y") - 1 },
+        {"x": elem.get("x"), "y": elem.get("y") + 1 },
+        {"x": elem.get("x") + 1, "y": elem.get("y") + 1 },
+        {"x": elem.get("x") - 1, "y": elem.get("y") + 1 },
+        
+    ]
+
+# клик в конкретную безопастную ячейку места для открытие соседних клеток
+def fakeClick(x, y, elemRecurs):
         elemCheck = getSchemaElement(schema, x, y)
         if(
             elemCheck and 
             (elemCheck.get("val") != 0 and elemCheck.get("val") != None ) and 
-            not checkFlagElem(x, y)
+            not checkFlagElem(x, y) and
+            checkAllCells0(elemCheck)
         ):
+            # TODO нажимает все подряд надо как то разобраться
             clickCell(x, y)
             checkStatusAI()
             createSchema()
-            # вызывать наверх функцию return fakeAllClickCheck и делать рекурсию 
-            # может быть ситуация что вверх нельзя нажать а после открытие соседней клетки в вверху появится число которое является кликабельным сделать тут или в checkSchema нужно смотреть
+            if elemRecurs:
+                fakeAllClickCheck(elemRecurs)
+            return True
 
- # изучение соседних клеток для понимание определение флажков
+# изучение соседних клеток для понимание определение флажков
 def checkElemClickAll(elem, checkClick):
-    blockCheckElemClick(elem.get("x") + 1, elem.get("y"), checkClick)
-    blockCheckElemClick(elem.get("x") - 1, elem.get("y"), checkClick)
-    
-    blockCheckElemClick(elem.get("x"), elem.get("y") - 1, checkClick)
-    blockCheckElemClick(elem.get("x") + 1, elem.get("y") - 1, checkClick)  
-    blockCheckElemClick(elem.get("x") - 1, elem.get("y") - 1, checkClick)
-    
-    blockCheckElemClick(elem.get("x"), elem.get("y") + 1, checkClick)
-    blockCheckElemClick(elem.get("x") + 1, elem.get("y") + 1, checkClick)  
-    blockCheckElemClick(elem.get("x") - 1, elem.get("y") + 1, checkClick)
- # изучение соседних клеток для понимание определение флажков
+    indexsCells = generatorIndexsCells(elem)
+    for indexCells in indexsCells:
+        blockCheckElemClick(indexCells.get("x"), indexCells.get("y"), checkClick)
+ 
 
 # возвращает наличия флага по x,y
 def checkFlagElem(x,y):
@@ -153,11 +193,11 @@ def createSchema():
     for y in range(env.sizeY()):
         for x in range(env.sizeX()):
             if checkFlagElem(x,y):
-                saveElementFlag(x, y, {"x": x, "y": y, "val": None}, "schema")
+                saveElementSchema(x, y, {"x": x, "y": y, "val": None}, "schema")
             else:
                 parsingImg.parsingCell(y, x)
                 val = parsingImg.cellPixelCheck()
-                saveElementFlag(x,y,{"x": x, "y": y, "val": val}, "schema")
+                saveElementSchema(x,y,{"x": x, "y": y, "val": val}, "schema")
 
 # клик по ячейки
 def clickPosition(x,y, type="left"):
