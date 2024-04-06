@@ -88,3 +88,7 @@ def checkStatus():
     _parsingScreen()
     _saveImgStatus()
     return _checkStatusGames()
+
+def fileAddOldScreen(i):
+    image_screen = Image.open('img/monitor-1.png').convert('RGB')
+    image_screen.save('img/monitor-' + str(i) + ".png", quality=95)

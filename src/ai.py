@@ -9,6 +9,8 @@ import env
 schema = []
 schemaFlag = []
 
+checkScreen = 1
+
 if env.levelSize() == 2:
     START_CELL_W = 1040
     START_CELL_H = 300
@@ -20,6 +22,11 @@ SIZE = 32
 def screenFull():
     with mss() as sct:
         sct.shot(mon=-1, output='img/monitor-1.png')
+
+def saveOldScreen():
+    global checkScreen
+    checkScreen = checkScreen + 1
+    parsingImg.fileAddOldScreen(checkScreen)
 
 def start():
     clickCell(0, 0, 3)
@@ -41,12 +48,14 @@ def clickRandom():
 def checkStatusAI():
     sleep(0.4)
     print("сделал скрин checkStatusAI")
+    saveOldScreen()
     screenFull()
     sleep(0.4)
     parsingImg.checkStatus()
     sleep(0.4)
 
 def checkSchema ():
+    print("checkSchema", schema)
     for elem in schema:
         if elem.get("val") != 0 and elem.get("val") != None:
             checkClick = []
@@ -57,7 +66,7 @@ def checkSchema ():
                 clickCell(checkClick[0].get("x"), checkClick[0].get("y"), 1, "right")
                 fakeAllClickCheck(checkClick[0])
                 checkStatusAI()
-                return         
+                return
     clickRandom()
     checkStatusAI()
 
@@ -118,6 +127,7 @@ def getSchemaElement(schema, x ,y):
             return elem
 
 def createSchema():
+    schema.clear()
     for y in range(env.sizeY()):
         for x in range(env.sizeX()):
             if checkFlagElem(x,y):
