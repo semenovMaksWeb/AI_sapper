@@ -71,24 +71,27 @@ def checkStatusAI():
 
 # анализ schema для понимания что можно сделать
 def checkSchema ():
+    print("createSchema", schema.items())
     for key, elem in schema.items():
         if elem.get("val") != 0 and elem.get("val") != None:
             checkClick = []
+            print("elem check", elem)
             checkElemClickAll(elem, checkClick)
-            if len(checkClick) == 1 and checkFlagAllCells(checkClick[0]):
+            print("checkClick", checkClick)
+            if len(checkClick) == 1 and checkFlagAllCells(elem):
                 flagAddCells(elem)
                 return
-            if len(checkClick) == elem.get("val") - getCounterFlagAllCells(elem):
-                for elemClick in checkClick:
-                    flagAddCells(elemClick)
-                return                   
+            # if len(checkClick) == elem.get("val") - getCounterFlagAllCells(elem):
+            #     for elemClick in checkClick:
+            #         flagAddCells(elemClick)
+                # return                   
     clickRandom()
     checkStatusAI()
 
 # Поставка флага для 1 ячейки
 def flagAddCells(elem):
-    saveElementSchema(elem.get("x"), elem.get("y"), elem, "schemaFlag")
-    saveElementSchema(elem.get("x"), elem.get("y"), {"x": elem.get("x"), "y": elem.get("y"), "val": None}, "schema")
+    saveElementSchema(elem.get("y"), elem.get("x"), elem, "schemaFlag")
+    saveElementSchema(elem.get("y"), elem.get("x"), {"x": elem.get("x"), "y": elem.get("y"), "val": None}, "schema")
     clickCell(elem.get("x"), elem.get("y"), 1, "right")
     fakeAllClickCheck(elem)
     checkStatusAI()
@@ -99,8 +102,6 @@ def fakeAllClickCheck(elem):
     for indexCells in indexsCells:
         if fakeClick(indexCells.get("x"), indexCells.get("y"), elem):
             return
-
-
 
 def getCounterFlagAllCells(elem):
     counter = 0
@@ -116,7 +117,6 @@ def checkFlagAllCells(elem):
         counter = getCounterFlagAllCells(elem)
         if counter != val:
             return True
-        fakeClick(elem.get("x"), elem.get("y"), None)
         return False 
         
 # проверка что есть хотя бы 1 соседний элемент который раскроет при клике
@@ -125,7 +125,7 @@ def checkAllCells0(elem):
     for indexCell in indexsCells:
         elemCheck = getSchemaElement(schema, indexCell.get("x"), indexCell.get("y"))
         
-        if(checkElementClick(elemCheck)):
+        if(elemCheck and checkElementClick(elemCheck)):
             return True
         
     return False
@@ -146,7 +146,7 @@ def generatorIndexsCells(elem):
 
 # клик в конкретную безопастную ячейку места для открытие соседних клеток
 def fakeClick(x, y, elemRecurs):
-        elemCheck = getSchemaElement(schema, x, y)
+        elemCheck = getSchemaElement(schema, y, x)
         if(
             elemCheck and 
             (elemCheck.get("val") != 0 and elemCheck.get("val") != None ) and 
@@ -169,13 +169,14 @@ def checkElemClickAll(elem, checkClick):
  
 
 # возвращает наличия флага по x,y
-def checkFlagElem(x,y):
-    return getSchemaElement(schemaFlag, x,y)
+def checkFlagElem(y,x):
+    return getSchemaElement(schemaFlag, y,x)
 
 # проверка что на эту ячейку можно поставить флаг
 def blockCheckElemClick(x,y, checkClick):
-    elemCheck = getSchemaElement(schema, x, y)
-    if elemCheck and checkElementClick(elemCheck) and not checkFlagElem(x,y):
+    elemCheck = getSchemaElement(schema, y, x)
+    print("x, y, elemCheck",x,y, elemCheck)
+    if elemCheck and checkElementClick(elemCheck) and not checkFlagElem(y,x):
         checkClick.append(elemCheck)
 
 # проверка что это неизвестная ячейка
@@ -185,7 +186,7 @@ def checkElementClick(elem):
     return False
 
 # получение объекта schema по x,y
-def getSchemaElement(schema, x ,y):
+def getSchemaElement(schema, y , x):
     return schema.get(getKeySchemaElement(y,x))
 
 # создание схемы по скрину
@@ -193,11 +194,12 @@ def createSchema():
     for y in range(env.sizeY()):
         for x in range(env.sizeX()):
             if checkFlagElem(x,y):
-                saveElementSchema(x, y, {"x": x, "y": y, "val": None}, "schema")
+                saveElementSchema(y, x, {"x": x, "y": y, "val": None}, "schema")
             else:
                 parsingImg.parsingCell(y, x)
                 val = parsingImg.cellPixelCheck()
-                saveElementSchema(x,y,{"x": x, "y": y, "val": val}, "schema")
+                saveElementSchema(y, x, {"x": x, "y": y, "val": val}, "schema")
+    print("createSchema", schema)
 
 # клик по ячейки
 def clickPosition(x,y, type="left"):
@@ -211,5 +213,6 @@ def clickPosition(x,y, type="left"):
 
 # клик по ячейки учитывая сдвиг до игрового поля
 def clickCell(x,y, time = 0.4, type = "left"):
+    print(x,y)
     sleep(time)  
     clickPosition(START_CELL_W + SIZE * x, START_CELL_H + SIZE * y, type)
