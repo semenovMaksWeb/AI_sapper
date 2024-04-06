@@ -125,6 +125,8 @@ def checkFlagAllCells(elem):
         
 # проверка что есть хотя бы 1 соседний элемент который раскроет при клике
 def checkAllCells0(elem):
+    if not elem:
+        return
     indexsCells = generatorIndexsCells(elem)
     for indexCell in indexsCells:
         elemCheck = getSchemaElement(schema, indexCell.get("y"), indexCell.get("x"))
@@ -150,11 +152,16 @@ def generatorIndexsCells(elem):
 # клик в конкретную безопастную ячейку места для открытие соседних клеток
 def fakeClick(y, x, elemRecurs, indexsCells, indexCells):
         elemCheck = getSchemaElement(schema, y, x)
+        checkCellAll0 = checkAllCells0(elemCheck)
+        
+        if not checkAllCells0:
+            indexsCells.remove(indexCells)
+            
         if(
             elemCheck and 
             (elemCheck.get("val") != 0 and elemCheck.get("val") != None ) and 
             not checkFlagElem(y, x) 
-            # and checkAllCells0(elemCheck)
+            and checkCellAll0
         ):
             # TODO нажимает все подряд надо как то разобраться
             indexsCells.remove(indexCells)
