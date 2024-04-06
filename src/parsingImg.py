@@ -60,7 +60,6 @@ def parsingCell(y, x):
         H_END = H_START + 32
     image_cell = image_pole.crop((W_START, H_START, W_END, H_END))
     image_cell.save('img/cell.png', quality = 95)
-    # image_cell.save('img/cell' + str(x) + str(y) + ".png", quality = 95)
     
 def cellPixelCheck():
     image_cell = Image.open("img/cell.png").convert('RGB')
@@ -88,7 +87,3 @@ def checkStatus():
     _parsingScreen()
     _saveImgStatus()
     return _checkStatusGames()
-
-def fileAddOldScreen(i):
-    image_screen = Image.open('img/monitor-1.png').convert('RGB')
-    image_screen.save('img/monitor-' + str(i) + ".png", quality=95)
